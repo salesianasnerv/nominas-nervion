@@ -136,20 +136,48 @@
       const t = (s, X, Y, o = {}) => pg.drawText(s, { x: X, y: Y, size: o.size || 9, font: o.b ? fb : f });
       if (x.resumen) { t("RESUMEN DE LA EMPRESA · TOTALES DEL MES", 60, 780, { b: true, size: 12 }); t("Total devengado ........ 000.000,00", 60, 740); continue; }
       if (x.continua) { t("(continuación)", 60, 780); t("Desglose de conceptos ...", 60, 760); continue; }
-      pg.drawRectangle({ x: 40, y: 700, width: 250, height: 100, borderWidth: 1, borderColor: PDFLib.rgb(0, 0, 0) });
-      pg.drawRectangle({ x: 300, y: 700, width: 255, height: 100, borderWidth: 1, borderColor: PDFLib.rgb(0, 0, 0) });
-      t("EMPRESA: (11)", 48, 785, { b: true }); t("N.I.F.: R4100211D", 200, 785); t("ESC. SALESIANAS Mª AUXILIADORA".replace("ª", "a"), 48, 768);
-      t("TRABAJADOR:", 308, 785, { b: true }); t("N.I.F.: " + x.nif, 450, 785); t(x.nombre, 308, 768);
-      t("No Afiliacion: 00/00000000/00", 308, 752); t("CATEGORIA: EJEMPLO", 308, 738);
-      const [a, m] = x.periodo.split("-");
-      t(`PERIODO DE LIQUIDACION:          Del 1 de ${MES[+m - 1]} de ${a} al 30 de ${MES[+m - 1]} de ${a}`, 40, 680);
-      t("I. DEVENGOS      (importes inventados)", 48, 650, { b: true }); t("LIQUIDO A PERCIBIR (A - B) Euros    0.000,00", 300, 120, { b: true });
+      // Misma estructura que la nómina de la gestoría (todos los datos inventados)
+      const negro = PDFLib.rgb(0, 0, 0), caja = (x0, y0, w, h) => pg.drawRectangle({ x: x0, y: y0, width: w, height: h, borderWidth: 0.8, borderColor: negro });
+      const der = (s, X, Y, o = {}) => t(s, X - (o.b ? fb : f).widthOfTextAtSize(s, o.size || 9), Y, o);
+      caja(40, 700, 255, 105); caja(305, 700, 255, 105);
+      t("EMPRESA:", 48, 790, { b: true }); t("(11)", 100, 790); t("N.I.F.:  R4100211D", 205, 790);
+      t("ESC. SALESIANAS Ma AUXILIADORA", 48, 772); t("DOMICILIO:  CL EJEMPLO, no1", 48, 756); t("LOCALIDAD:  SEVILLA - 00000", 48, 742);
+      t("COD. CUENTA COTIZACION:  00/0000000/00", 48, 726);
+      t("TRABAJADOR:", 313, 790, { b: true }); t("N.I.F.:  " + x.nif, 455, 790); t(x.nombre, 313, 772);
+      t("No Afiliacion:  00/00000000/00", 313, 756); t("OCUPACION:", 490, 756);
+      t("CATEGORIA:  PROF. EJEMPLO", 313, 742); t("FECHA ANTIGUEDAD:  01/09/2000   G.COTIZACION: 1", 313, 726);
+      const [a, m] = x.periodo.split("-"), mes = MES[+m - 1], dias = new Date(+a, +m, 0).getDate();
+      t("PERIODO DE LIQUIDACION:", 40, 682, { b: true }); t(`Del 1 de ${mes} de ${a} al ${dias} de ${mes} de ${a}`, 220, 682); t("DIAS:  30", 500, 682);
+      caja(40, 150, 255, 520); caja(305, 150, 255, 520);
+      t("I. DEVENGOS", 48, 655, { b: true }); t("1. Percepciones Salariales", 56, 640);
+      t("Valor", 190, 640); t("d/h", 225, 640); t("Importe", 252, 640);
+      const conceptos = [["001-Salario base (ejemplo)", "1.000,00"], ["003-Antiguedad (ejemplo)", "100,00"], ["004-Complemento autonomico", "50,00"], ["039-Equiparacion salarial", "25,00"]];
+      conceptos.forEach(([c, v], k) => { t(c, 56, 622 - k * 15); t("30", 228, 622 - k * 15); der(v, 288, 622 - k * 15); });
+      t("Total Percepciones Salariales (1) ......", 70, 545); der("1.175,00", 288, 545, { b: true });
+      t("Total Devengado (1) ..................", 70, 165); der("1.175,00", 288, 165, { b: true });
+      t("(A) TOTAL DEVENGADO (1) .......", 313, 655); der("1.175,00", 552, 655, { b: true });
+      t("II. DEDUCCIONES", 313, 635, { b: true }); t("1. Aportacion del Trabajador a las cotizaciones de la S. Social", 313, 620, { size: 8 });
+      [["Contin. Comunes", "55,23"], ["Mecanismo Equidad In", "1,76"], ["Desempleo", "18,21"], ["Formacion profesional", "1,18"]].forEach(([c, v], k) => { t(c, 320, 604 - k * 14); der(v, 552, 604 - k * 14); });
+      t("Total Aportaciones ..............", 380, 530); der("76,38", 552, 530, { b: true });
+      t("2. Impuesto renta personas fisicas", 313, 500, { size: 8 }); t("Retenciones I.R.P.F.   1.175,00 * 10,00%", 320, 485); der("117,50", 552, 485, { b: true });
+      t("(B) TOTAL A DEDUCIR ............", 313, 165); der("193,88", 552, 165, { b: true });
+      t("LIQUIDO A PERCIBIR (A - B) Euros", 305, 132, { b: true, size: 11 }); der("981,12", 552, 132, { b: true, size: 12 });
+      t("DATOS INVENTADOS - EJEMPLO PARA PROBAR LA WEB", 150, 60, { b: true, size: 12 });
     }
     return await doc.save();
   }
+  // Nombre de quien ha entrado en formato de nómina: «APELLIDOS, NOMBRE» (las dos últimas palabras como apellidos)
+  function nombreNomina(n) {
+    const w = L.normal(n).replace(/[^A-ZÑ ]/g, " ").split(" ").filter(Boolean);
+    if (w.length < 2) return null;
+    const k = w.length >= 3 ? 2 : 1;
+    return `${w.slice(-k).join(" ")}, ${w.slice(0, -k).join(" ")}`;
+  }
   async function generarEjemplo() {
     const p = $("#sMes").value || new Date().toISOString().slice(0, 7);
+    const yo = !DEMO && S.user ? nombreNomina(S.user.nombre) : null;
     const lista = [
+      ...(yo ? [{ nif: "00000000T", nombre: yo }] : []),
       { nif: "11111111H", nombre: "ALBA INVENTADA, MARTA" }, { nif: "22222222J", nombre: "BLANCO EJEMPLO, JUAN" },
       { nif: "22222222J", nombre: "BLANCO EJEMPLO, JUAN" }, { nif: "33333333P", nombre: "CASTRO FICTICIA, ROSA" },
       { resumen: true }, { nif: "44444444A", nombre: "DIAZ PRUEBA, ANA" }, { nif: "X1234567L", nombre: "ESTEBAN MODELO, LUIS" },
@@ -430,11 +458,16 @@
     if (S.gestor) {
       $("#pestanas").hidden = false; pasos(1);
       const d = new Date(); $("#sMes").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      if (DEMO) {
-        const b = document.createElement("button"); b.className = "btn sec"; b.type = "button"; b.textContent = "Probar con un PDF de ejemplo inventado";
-        b.style.marginTop = "12px"; b.addEventListener("click", async () => procesar([await generarEjemplo()]));
-        $("#cajaSubir").appendChild(b);
-      }
+      // Pruebas sin nóminas reales: PDF con datos inventados (incluye una hoja a nombre de quien ha entrado)
+      const pr = document.createElement("div"); pr.className = "btns"; pr.style.marginTop = "12px";
+      pr.innerHTML = `<button class="btn sec" type="button" id="ejProbar">Probar con un PDF de ejemplo inventado</button>
+        <button class="btn sec" type="button" id="ejBajar">Descargar el PDF de ejemplo</button>`;
+      $("#cajaSubir").appendChild(pr);
+      $("#ejProbar").addEventListener("click", async () => procesar([await generarEjemplo()]));
+      $("#ejBajar").addEventListener("click", async () => {
+        const f = await generarEjemplo(), a = document.createElement("a");
+        a.href = URL.createObjectURL(f); a.download = "Nominas de ejemplo (inventadas).pdf"; document.body.appendChild(a); a.click(); a.remove();
+      });
       api.limpiar();
     }
     try { await cargarMias(); } catch (e) { $("#listaMias").innerHTML = `<p class="error">${esc(e.message || e)}</p>`; }

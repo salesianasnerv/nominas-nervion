@@ -2,7 +2,7 @@
 // Aquí SOLO se guarda la web (páginas, estilos, iconos). Las nóminas y los datos NUNCA se guardan
 // en la caché: se piden siempre a Supabase con enlaces de 60 segundos.
 // Si cambias la lista de archivos, sube también el número de VERSION.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `nominas-${VERSION}`;
 const CARCASA = ['./', 'index.html', 'styles.css', 'app.js', 'leer-nominas.js', 'config.js', 'teams.js', 'manifest.json', 'logo.svg',
   'favicon-32.png', 'favicon-48.png', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
