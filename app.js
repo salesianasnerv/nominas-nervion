@@ -395,6 +395,25 @@
     }
   });
 
+  // ─── Instalar como app (PWA) y aviso sin conexión ───
+  (function instalar() {
+    const b = $("#instalar");
+    if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) return;
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    let aviso = null;
+    if (ios) b.hidden = false;
+    addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); aviso = e; b.hidden = false; });
+    addEventListener("appinstalled", () => { b.hidden = true; });
+    b.onclick = async () => {
+      if (aviso) { aviso.prompt(); try { await aviso.userChoice; } catch {} aviso = null; b.hidden = true; return; }
+      avisar("Instalar la app", `<ol><li>Pulsa el botón <b>Compartir</b> de Safari (el cuadrado con una flecha hacia arriba).</li>
+        <li>Elige <b>«Añadir a pantalla de inicio»</b>.</li><li>Pulsa <b>Añadir</b>. Aparecerá el icono de Nóminas en tu pantalla.</li></ol>`);
+    };
+  })();
+  const conexion = () => ($("#offline").hidden = navigator.onLine);
+  addEventListener("online", conexion); addEventListener("offline", conexion); conexion();
+  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+
   // ─── Inicio ───
   async function iniciar() {
     if (DEMO) $("#avisoDemo").hidden = false;

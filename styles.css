@@ -78,6 +78,22 @@ select, input[type=search], input[type=month] { border: 1px solid var(--borde); 
 .btn.sec { background: transparent; border: 1.5px solid var(--naranja); color: var(--naranja); }
 .btn.sec:hover { background: var(--nar-bg); }
 .btn.grande { font-size: 16px; padding: 10px 22px; }
+/* Acceso (igual que en el resto de webs, en el naranja de la sección General) */
+.login { display: grid; place-items: center; padding: 8px 0 28px; }
+.tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 16px; padding: 36px 32px; max-width: 440px; width: 100%; text-align: center; box-shadow: var(--sombra); }
+.tarjeta h2 { font-size: 1.5rem; color: var(--naranja); margin: 0 0 .4rem; }
+.tarjeta p { color: var(--suave); margin: 0 0 1.5rem; }
+.tarjeta .error { margin: 1rem 0 0; }
+.btn-ms { display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-radius: 8px; padding: 10px 20px; min-height: 44px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2); box-shadow: 0 6px 16px -6px rgba(238, 113, 42, .6); }
+.btn-ms svg { background: #fff; padding: 3px; border-radius: 4px; box-sizing: content-box; flex: none; }
+/* Instalar como app */
+.instalar { flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border: 0; border-radius: 999px;
+  background: var(--naranja); color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; }
+.instalar:hover { background: var(--naranja-osc); }
+.instalar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.instalar + .usuario { margin-left: 12px; }
+.dlg ol { margin: 0; padding-left: 20px; } .dlg li + li { margin-top: 6px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .vacio { color: var(--suave); text-align: center; padding: 24px 8px; }
 .nota { display: flex; gap: 10px; background: var(--nar-bg); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
@@ -121,4 +137,11 @@ select, input[type=search], input[type=month] { border: 1px solid var(--borde); 
 .barra-prog { height: 8px; background: var(--borde); border-radius: 4px; overflow: hidden; margin-top: 10px; }
 .barra-prog span { display: block; height: 100%; background: var(--naranja); width: 0; transition: width .2s; }
 .pie { text-align: center; color: var(--suave); font-size: 13px; padding: 20px 16px; border-top: 1px solid var(--borde); }
-@media (max-width: 560px) { .marca span { font-size: 16px; } .usuario > span { display: none; } }
+@media (max-width: 560px) {
+  .marca .logo { height: 32px; } .marca { gap: 10px; } .marca span { font-size: 16px; padding-left: 10px; }
+  .usuario > span { display: none; } .instalar span { display: none; } .instalar { padding: 7px; }
+  .caja { padding: 16px 14px; } .tarjeta { padding: 28px 20px; }
+  .rejilla { grid-template-columns: 1fr 1fr; gap: 8px; } .nom { padding: 10px; } .nom .btn { padding: 6px 10px; font-size: 13px; }
+  .pasos .paso { min-width: 100%; } .pie-acc .txt { flex-basis: 100%; }
+}
+@media (max-width: 380px) { .rejilla { grid-template-columns: 1fr; } }

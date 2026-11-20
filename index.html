@@ -3,13 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mis nóminas</title>
+  <title>Mis nóminas | Escuelas Salesianas María Auxiliadora · Nervión (Sevilla)</title>
+  <meta name="description" content="Cada trabajador del colegio consulta y descarga sus nóminas con su cuenta de Microsoft 365.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#ee712a">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
   <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nóminas">
+  <meta name="application-name" content="Nóminas">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- Vista previa al compartir el enlace (WhatsApp, Teams, correo) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Escuelas Salesianas María Auxiliadora">
+  <meta property="og:title" content="Mis nóminas | Escuelas Salesianas María Auxiliadora · Nervión (Sevilla)">
+  <meta property="og:description" content="Cada trabajador del colegio consulta y descarga sus nóminas con su cuenta de Microsoft 365.">
+  <meta property="og:url" content="https://nominas-nervion.vercel.app/">
+  <meta property="og:image" content="https://nominas-nervion.vercel.app/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Mis nóminas · Escuelas Salesianas María Auxiliadora · Nervión">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://nominas-nervion.vercel.app/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,9 +38,13 @@
   <script src="https://claustro-utilidades.vercel.app/barra.js" defer></script>
 </head>
 <body>
+  <div class="aviso-demo" id="offline" hidden>Sin conexión: las nóminas necesitan internet.</div>
   <div class="aviso-demo" id="avisoDemo" hidden>MODO PRUEBA · personal y nóminas inventados · nada sale de este navegador</div>
   <header class="top">
     <div class="marca"><img class="logo" src="logo.svg" alt="Salesianas Nervión"><span>Mis nóminas</span></div>
+    <button type="button" class="instalar" id="instalar" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Instalar como app</span>
+    </button>
     <div class="usuario" id="usuario" hidden><span id="usuarioNombre"></span><button type="button" class="enlace" id="salir">Salir</button></div>
   </header>
 
@@ -32,11 +57,16 @@
     </section>
 
     <!-- Sin sesión -->
-    <section id="vEntrar" class="caja centro" hidden>
-      <h2>Entrar</h2>
-      <p class="sub">Usa tu cuenta del colegio (@salesianas.org).</p>
-      <button type="button" class="btn grande" id="entrar">Entrar con Microsoft 365</button>
-      <p class="error" id="errorEntrar" hidden></p>
+    <section id="vEntrar" class="login" hidden>
+      <div class="tarjeta">
+        <h2>Acceso del personal</h2>
+        <p>Pulsa el botón y entra con tu cuenta del colegio <strong>@salesianas.org</strong>.</p>
+        <button id="entrar" class="btn grande btn-ms" type="button">
+          <svg viewBox="0 0 21 21" width="20" height="20" aria-hidden="true"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+          Entrar con Microsoft 365
+        </button>
+        <p class="error" id="errorEntrar" hidden></p>
+      </div>
     </section>
 
     <div id="cargando" class="sub centro">Cargando…</div>
