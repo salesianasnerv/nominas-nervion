@@ -1,0 +1,16 @@
+# Bloqueo: este repositorio es público. Si alguien sube un PDF (por ejemplo, con «Add files via upload»),
+# la comprobación falla en rojo y avisa. Si pasa, borra el archivo y avisa a Mª Ángeles.
+name: Sin nóminas en el repositorio
+on: [push, pull_request]
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buscar PDF o ZIP
+        run: |
+          if git ls-files | grep -iE '\.(pdf|zip)$'; then
+            echo "::error::Hay archivos PDF o ZIP en el repositorio. Este repositorio es público: bórralos ya."
+            exit 1
+          fi
+          echo "Correcto: no hay PDF ni ZIP."

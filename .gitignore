@@ -1,0 +1,5 @@
+# NUNCA subir nóminas (ni de prueba) a este repositorio público
+*.pdf
+*.PDF
+*.zip
+.DS_Store

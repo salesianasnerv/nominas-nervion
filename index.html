@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mis nóminas</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ee712a">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://claustro-utilidades.vercel.app/barra.js" defer></script>
+</head>
+<body>
+  <div class="aviso-demo" id="avisoDemo" hidden>MODO PRUEBA · personal y nóminas inventados · nada sale de este navegador</div>
+  <header class="top">
+    <div class="marca"><img class="logo" src="logo.svg" alt="Salesianas Nervión"><span>Mis nóminas</span></div>
+    <div class="usuario" id="usuario" hidden><span id="usuarioNombre"></span><button type="button" class="enlace" id="salir">Salir</button></div>
+  </header>
+
+  <main>
+    <section class="portada">
+      <span class="eyebrow">General · Personal del colegio</span>
+      <h1>Mis nóminas</h1>
+      <div class="franjas" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p>Aquí tienes tus nóminas. Solo tú puedes verlas, entrando con tu cuenta de Microsoft 365 del colegio.</p>
+    </section>
+
+    <!-- Sin sesión -->
+    <section id="vEntrar" class="caja centro" hidden>
+      <h2>Entrar</h2>
+      <p class="sub">Usa tu cuenta del colegio (@salesianas.org).</p>
+      <button type="button" class="btn grande" id="entrar">Entrar con Microsoft 365</button>
+      <p class="error" id="errorEntrar" hidden></p>
+    </section>
+
+    <div id="cargando" class="sub centro">Cargando…</div>
+
+    <!-- Con sesión -->
+    <div id="app" hidden>
+      <div class="pestanas" role="tablist" id="pestanas" hidden>
+        <button role="tab" aria-selected="true" data-v="vMias">Mis nóminas</button>
+        <button role="tab" aria-selected="false" data-v="vSubir">Subir nóminas</button>
+        <button role="tab" aria-selected="false" data-v="vRegistro">Remesas y registro</button>
+      </div>
+
+      <!-- MIS NÓMINAS -->
+      <section class="vista activa" id="vMias">
+        <div class="caja">
+          <div class="filtros">
+            <label>Año <select id="fAnio"><option value="">Todos</option></select></label>
+            <label>Tipo <select id="fTipo"><option value="">Todos</option></select></label>
+          </div>
+          <div id="listaMias"></div>
+        </div>
+        <div class="nota"><span aria-hidden="true">🔒</span><div>Al pulsar «Ver» o «Descargar» se crea un enlace personal que caduca en 60 segundos, y queda anotado cuándo abres cada nómina (lo ves en cada tarjeta). Las nóminas se guardan aquí durante su curso y los 4 siguientes; descarga las que quieras conservar.</div></div>
+      </section>
+
+      <!-- SUBIR -->
+      <section class="vista" id="vSubir">
+        <div class="pasos">
+          <div class="paso" data-paso="1"><b>1. Subir el PDF</b>El PDF del mes que manda la gestoría</div>
+          <div class="paso" data-paso="2"><b>2. Revisar</b>Comprobar a quién va cada nómina</div>
+          <div class="paso" data-paso="3"><b>3. Publicar</b>Cada persona ve solo la suya</div>
+        </div>
+
+        <div class="caja" id="cajaSubir">
+          <h2>1. Subir el PDF</h2>
+          <p class="sub">El PDF se lee y se divide en este ordenador. Hasta que pulses «Publicar» no se envía nada.</p>
+          <div class="campos">
+            <label>Mes <input type="month" id="sMes"></label>
+            <label>Tipo <select id="sTipo">
+              <option>Nómina mensual</option><option>Paga extra</option><option>Atrasos</option>
+              <option>Finiquito</option><option>Certificado de retenciones</option></select></label>
+            <label>Firma <select id="sFirma">
+              <option value="original">Un PDF de todo el personal (firmado entero): dividir y guardar el original</option>
+              <option value="individual">Un PDF por persona (ya firmados): no se dividen</option></select></label>
+          </div>
+          <label class="soltar" id="soltar">
+            <input type="file" id="sArchivo" accept="application/pdf" hidden>
+            <span class="arch" id="sArchivoTxt">📄 Pulsa aquí o arrastra el PDF</span>
+            <span class="motivo" id="sArchivoInfo">Solo PDF. No se envía nada hasta publicar.</span>
+          </label>
+          <p class="error" id="errorSubir" hidden></p>
+        </div>
+
+        <div class="caja" id="cajaRevisar" hidden>
+          <h2>2. Revisar antes de publicar</h2>
+          <p class="sub">Cada nómina se empareja por el NIF de la cabecera (recuadro «Trabajador») y se comprueba también el nombre. Lo rojo y lo ámbar hay que resolverlo antes de publicar.</p>
+          <div class="cifras" id="cifras"></div>
+          <div class="filtros">
+            <input type="search" id="rBuscar" placeholder="Buscar por nombre…" aria-label="Buscar por nombre">
+            <select id="rMostrar"><option value="revisar">Mostrar: lo que hay que revisar</option><option value="todas">Mostrar: todas</option></select>
+          </div>
+          <div class="desliza"><table class="tabla">
+            <thead><tr><th>Págs.</th><th>Leído en la cabecera</th><th>NIF</th><th>Persona del colegio</th><th>Estado</th></tr></thead>
+            <tbody id="filas"></tbody>
+          </table></div>
+
+          <div id="bloqueSueltas" hidden>
+            <h3>Páginas sin emparejar</h3>
+            <p class="sub">No se ha encontrado NIF de trabajador. Únelas a otra nómina o déjalas fuera.</p>
+            <div class="desliza"><table class="tabla"><tbody id="sueltas"></tbody></table></div>
+          </div>
+
+          <label class="check"><input type="checkbox" id="sAvisar" checked>
+            <span><b>Avisar por correo a cada trabajador al publicar</b><br>
+            <span class="motivo">Solo el aviso y el enlace, sin adjuntos ni importes. (El envío se activa cuando esté preparado el flujo de correo.)</span></span></label>
+
+          <div class="pie-acc">
+            <span class="txt" id="txtPublicar"></span>
+            <button class="btn sec" type="button" id="cancelar">Cancelar</button>
+            <button class="btn" type="button" id="publicar" disabled>Publicar</button>
+          </div>
+        </div>
+
+        <div class="caja firma">
+          <h2>Sobre la firma digital</h2>
+          <p class="sub sin-margen">Al dividir un PDF firmado, cada nómina suelta ya no lleva una firma válida. Por eso, con «Un PDF de todo el personal», se guarda también el original firmado completo (solo lo puedes abrir tú desde «Remesas y registro») y cada copia lleva al pie una nota que lo indica. Si la gestoría manda un PDF por persona ya firmado, elige «Un PDF por persona» y se conserva la firma de cada uno.</p>
+        </div>
+      </section>
+
+      <!-- REGISTRO -->
+      <section class="vista" id="vRegistro">
+        <div class="caja">
+          <h2>Remesas publicadas</h2>
+          <p class="sub">«Retirar» quita la remesa a todas las personas al momento (por ejemplo, si se subió algo por error).</p>
+          <div class="desliza"><table class="tabla">
+            <thead><tr><th>Mes</th><th>Tipo</th><th>Nóminas</th><th>Publicada</th><th>Abiertas</th><th></th></tr></thead>
+            <tbody id="remesas"></tbody></table></div>
+        </div>
+        <div class="caja">
+          <h2>Últimos accesos</h2>
+          <p class="sub">Quién abrió qué y cuándo. Se borra a la vez que las nóminas.</p>
+          <div class="desliza"><table class="tabla">
+            <thead><tr><th>Fecha</th><th>Persona</th><th>Acción</th><th>Nómina</th></tr></thead>
+            <tbody id="registro"></tbody></table></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="dlg" id="dlg"><h2 id="dlgT"></h2><div id="dlgTxt"></div>
+    <form method="dialog" class="dlg-btns"><button class="btn sec" value="no" id="dlgNo">Cancelar</button><button class="btn" value="si" id="dlgSi">Aceptar</button></form></dialog>
+
+  <footer class="pie">Escuelas Salesianas María Auxiliadora · Nervión (Sevilla)</footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="teams.js"></script>
+  <script src="leer-nominas.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
