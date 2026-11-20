@@ -299,6 +299,19 @@ select cron.unschedule('nominas-borrado') where exists (select 1 from cron.job w
 select cron.schedule('nominas-borrado', '15 3 * * *', 'select nom_borrado_nocturno()');
 
 -- 7. Permiso para subir: titularnervion@ y administracionnervion@ (decidido el 20-11-2026)
+--    La tabla «permisos» solo admite una lista cerrada de webs: se añade «nominas» a esa lista.
+do $$
+declare def text;
+begin
+  select pg_get_constraintdef(oid) into def from pg_constraint
+   where conrelid = 'public.permisos'::regclass and conname = 'permisos_web_check';
+  if def is not null and def not like '%''nominas''%' then
+    if def not like '%ARRAY[%' then raise exception 'No sé ampliar permisos_web_check: %', def; end if;
+    execute 'alter table permisos drop constraint permisos_web_check';
+    execute 'alter table permisos add constraint permisos_web_check ' || replace(def, 'ARRAY[', 'ARRAY[''nominas''::text, ');
+  end if;
+end $$;
+
 --    Se busca el correo exacto en la tabla «personal», para no adivinar el dominio.
 insert into permisos (email, web)
 select lower(p.email::text), 'nominas' from personal p
